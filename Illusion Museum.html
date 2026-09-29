@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Illusion Museum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0A0A0D;
+  --wall:#151519;
+  --wall-2:#1B1B21;
+  --glass:rgba(255,255,255,0.045);
+  --glass-b:rgba(255,255,255,0.09);
+  --ink:#EEE9DF;
+  --ink-dim:#A6A29A;
+  --amber:#E8A33D;
+  --amber-dim:#8A6323;
+  --violet:#9884E8;
+  --violet-dim:#4A4178;
+  --line:rgba(238,233,223,0.10);
+  --radius:2px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--void);
+  color:var(--ink);
+  font-family:'IBM Plex Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,.serif{
+  font-family:'Fraunces', Georgia, 'Times New Roman', serif;
+  font-weight:600;
+  letter-spacing:-0.01em;
+  margin:0;
+}
+p{margin:0;line-height:1.6;color:var(--ink-dim);}
+a{color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+::selection{background:var(--amber);color:#1a1200;}
+
+/* ---------- layout shell ---------- */
+#topnav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  padding-top:calc(env(safe-area-inset-top,0px) + 14px);
+  padding-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+  padding-left:clamp(16px,4vw,40px);
+  padding-right:clamp(16px,4vw,40px);
+  background:linear-gradient(to bottom, rgba(10,10,13,0.92), rgba(10,10,13,0.7) 70%, transparent);
+  backdrop-filter:blur(6px);
+}
+.brand{display:flex;align-items:baseline;gap:8px;cursor:pointer;}
+.brand-mark{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;letter-spacing:0.02em;}
+.brand-mark em{font-style:normal;color:var(--amber);}
+.navlinks{display:flex;gap:22px;align-items:center;}
+.navlinks button{
+  background:none;border:none;color:var(--ink-dim);font-size:0.86rem;
+  padding:6px 2px;border-bottom:1px solid transparent;transition:color .2s, border-color .2s;
+}
+.navlinks button:hover, .navlinks button.active{color:var(--ink);border-color:var(--amber);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.icon-btn{
+  background:var(--glass);border:1px solid var(--glass-b);color:var(--ink);
+  padding:7px 12px;font-size:0.78rem;border-radius:var(--radius);
+  display:flex;align-items:center;gap:6px;transition:border-color .2s, background .2s;
+}
+.icon-btn:hover{border-color:var(--amber);}
+select#langsel{
+  background:var(--glass);border:1px solid var(--glass-b);color:var(--ink);
+  padding:7px 10px;font-size:0.78rem;border-radius:var(--radius);
+}
+.hamburger{display:none;background:none;border:1px solid var(--glass-b);color:var(--ink);padding:8px 10px;border-radius:var(--radius);}
+
+#app{padding-top:0;}
+.view{display:none;min-height:100vh;}
+.view.active{display:block;}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);}
+.eyebrow{font-size:0.72rem;color:var(--amber);letter-spacing:0.08em;margin-bottom:10px;display:block;}
+.section-title{font-size:clamp(1.6rem,3.4vw,2.4rem);margin-bottom:10px;}
+.section-lede{max-width:56ch;margin-bottom:34px;}
+
+/* ---------- hero ---------- */
+#view-home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;}
+.hero-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 30% 20%, rgba(232,163,61,0.14), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 75% 65%, rgba(152,132,232,0.13), transparent 60%);
+}
+.hero-inner{position:relative;text-align:center;padding:120px 24px 80px;}
+.hero-eyebrow{color:var(--ink-dim);font-size:0.82rem;letter-spacing:0.12em;margin-bottom:26px;}
+.hero-title{
+  font-size:clamp(3rem,10vw,7.2rem);line-height:0.92;
+  background:linear-gradient(120deg, #fff 10%, var(--amber) 55%, var(--violet) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{margin:26px auto 44px;font-size:clamp(1rem,2vw,1.25rem);font-style:italic;color:var(--ink-dim);max-width:34ch;font-family:'Fraunces',serif;}
+.enter-btn{
+  background:var(--amber);color:#1a1200;border:none;padding:18px 42px;font-size:0.95rem;
+  font-weight:600;letter-spacing:0.03em;border-radius:var(--radius);
+  transition:transform .25s ease, box-shadow .25s ease;
+  box-shadow:0 0 0 rgba(232,163,61,0);
+}
+.enter-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px -8px rgba(232,163,61,0.5);}
+.hero-hint{margin-top:28px;font-size:0.78rem;color:var(--ink-dim);opacity:0.7;}
+
+/* ---------- museum map ---------- */
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px;}
+.room-card{
+  background:var(--wall);padding:26px 22px;min-height:170px;display:flex;flex-direction:column;justify-content:space-between;
+  cursor:pointer;position:relative;overflow:hidden;transition:background .25s;
+}
+.room-card:hover{background:var(--wall-2);}
+.room-card .rn{font-size:0.7rem;color:var(--amber);letter-spacing:0.06em;}
+.room-card h3{font-size:1.2rem;margin-top:10px;}
+.room-card p{font-size:0.82rem;margin-top:8px;}
+.room-card .go{align-self:flex-end;font-size:1.2rem;color:var(--ink-dim);transition:transform .2s, color .2s;}
+.room-card:hover .go{color:var(--amber);transform:translateX(4px);}
+
+/* ---------- generic room view ---------- */
+.room-hero{padding:130px 0 30px;border-bottom:1px solid var(--line);margin-bottom:40px;}
+.room-crumb{font-size:0.76rem;color:var(--ink-dim);margin-bottom:14px;}
+.room-crumb button{background:none;border:none;color:var(--ink-dim);text-decoration:underline;font-size:inherit;padding:0;}
+.exhibit{
+  background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--radius);
+  padding:clamp(20px,4vw,40px);margin-bottom:28px;
+}
+.exhibit-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px;flex-wrap:wrap;}
+.exhibit-head h3{font-size:1.3rem;}
+.stage{
+  display:flex;align-items:center;justify-content:center;
+  min-height:260px;background:var(--void);border:1px solid var(--line);
+  margin:18px 0;position:relative;overflow:hidden;touch-action:none;
+}
+.hint-chip{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,0.55);border:1px solid var(--glass-b);color:var(--ink);
+  font-size:0.7rem;padding:6px 12px;border-radius:20px;backdrop-filter:blur(4px);
+  pointer-events:none;
+}
+.controls-row{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-top:16px;}
+.control{display:flex;flex-direction:column;gap:6px;font-size:0.76rem;color:var(--ink-dim);min-width:160px;}
+input[type=range]{accent-color:var(--amber);width:100%;}
+.mini-btn{
+  background:transparent;border:1px solid var(--glass-b);color:var(--ink);
+  padding:9px 16px;font-size:0.78rem;border-radius:var(--radius);transition:border-color .2s;
+}
+.mini-btn:hover{border-color:var(--amber);}
+.mini-btn.on{border-color:var(--violet);color:var(--violet);}
+.heart-btn{background:none;border:none;color:var(--ink-dim);font-size:1rem;padding:4px;transition:color .2s, transform .2s;}
+.heart-btn.saved{color:var(--amber);}
+.heart-btn:hover{transform:scale(1.15);}
+
+.explain{margin-top:14px;font-size:0.88rem;color:var(--ink-dim);border-left:2px solid var(--amber-dim);padding-left:14px;}
+
+/* science accordion */
+.science{margin-top:16px;border-top:1px solid var(--line);padding-top:14px;}
+.science-toggle{background:none;border:none;color:var(--violet);font-size:0.82rem;padding:0;display:flex;align-items:center;gap:6px;}
+.science-body{display:none;margin-top:14px;}
+.science-body.open{display:block;}
+.sci-tabs{display:flex;gap:8px;margin-bottom:12px;}
+.sci-tab{background:var(--glass);border:1px solid var(--glass-b);color:var(--ink-dim);font-size:0.72rem;padding:6px 12px;border-radius:20px;}
+.sci-tab.active{color:var(--ink);border-color:var(--violet);}
+.sci-pane{display:none;font-size:0.85rem;color:var(--ink-dim);line-height:1.65;}
+.sci-pane.active{display:block;}
+
+.room-nav{display:flex;justify-content:space-between;margin:50px 0 90px;gap:12px;flex-wrap:wrap;}
+
+/* ---------- brain vs eyes / what-do-you-see cards ---------- */
+.quiz-card{background:var(--glass);border:1px solid var(--glass-b);padding:clamp(20px,4vw,34px);margin-bottom:24px;border-radius:var(--radius);}
+.quiz-q{font-family:'Fraunces',serif;font-size:1.15rem;margin-bottom:16px;}
+.quiz-options{display:flex;gap:10px;flex-wrap:wrap;}
+.quiz-opt{background:transparent;border:1px solid var(--glass-b);color:var(--ink);padding:10px 18px;border-radius:var(--radius);font-size:0.85rem;}
+.quiz-opt:hover{border-color:var(--amber);}
+.quiz-opt.picked{border-color:var(--violet);background:rgba(152,132,232,0.1);}
+.reveal{display:none;margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);}
+.reveal.show{display:block;}
+.reveal .verdict{color:var(--amber);font-family:'Fraunces',serif;font-size:1.05rem;margin-bottom:8px;}
+
+/* ---------- challenge ---------- */
+.challenge-progress{display:flex;gap:6px;margin-bottom:24px;}
+.challenge-progress span{flex:1;height:3px;background:var(--line);}
+.challenge-progress span.done{background:var(--amber);}
+.challenge-progress span.now{background:var(--violet);}
+.score-card{
+  background:var(--glass);border:1px solid var(--glass-b);padding:44px;text-align:center;border-radius:var(--radius);
+}
+.score-num{font-family:'Fraunces',serif;font-size:4rem;color:var(--amber);}
+.score-line{font-size:0.95rem;color:var(--ink-dim);margin-top:6px;}
+.share-preview{
+  margin:26px auto;max-width:380px;background:var(--void);border:1px solid var(--glass-b);
+  padding:30px 24px;text-align:left;
+}
+.share-preview h4{font-family:'Fraunces',serif;font-size:1.15rem;margin-bottom:14px;}
+.share-preview .row{display:flex;justify-content:space-between;font-size:0.85rem;color:var(--ink-dim);padding:6px 0;border-bottom:1px solid var(--line);}
+
+/* ---------- collection ---------- */
+.collect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:24px;}
+.collect-item{background:var(--glass);border:1px solid var(--glass-b);padding:18px;position:relative;}
+.collect-item h4{font-size:1rem;margin-bottom:4px;}
+.collect-item .rm{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--ink-dim);font-size:0.9rem;}
+.empty-state{padding:60px 20px;text-align:center;color:var(--ink-dim);border:1px dashed var(--line);}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:40px clamp(16px,4vw,40px) calc(40px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--ink-dim);font-size:0.78rem;}
+
+/* ---------- surprise floating btn ---------- */
+#surprise-fab{
+  position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:40;
+  background:var(--violet);color:#100c20;border:none;padding:13px 20px;border-radius:30px;
+  font-size:0.8rem;font-weight:600;box-shadow:0 8px 24px -6px rgba(152,132,232,0.6);
+}
+
+/* ---------- illusion-specific visuals ---------- */
+/* room1: cafe wall */
+.cw-canvas{display:flex;flex-direction:column;}
+.cw-row{display:flex;height:20px;}
+.cw-row div{width:20px;height:20px;}
+
+/* room2: penrose morph */
+.pz-wrap{position:relative;width:260px;height:260px;}
+.pz-wrap svg{position:absolute;inset:0;transition:opacity .15s linear;}
+
+/* room3: ebbinghaus */
+.eb-wrap{display:flex;align-items:center;justify-content:center;gap:70px;}
+.eb-center{background:var(--amber);border-radius:50%;}
+.eb-ring{display:flex;align-items:center;justify-content:center;}
+.eb-small{background:var(--ink-dim);border-radius:50%;}
+
+/* room4: checker shadow */
+.cs-grid{display:grid;grid-template-columns:repeat(8,32px);grid-template-rows:repeat(8,32px);position:relative;}
+.cs-cell{width:32px;height:32px;}
+
+/* room5: motion */
+.mo-svg{animation:spin linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* room6: mirror canvas */
+#mirrorCanvas{background:var(--void);touch-action:none;}
+
+/* room7: 3d */
+.scene3d{perspective:700px;}
+.cube{position:relative;width:140px;height:140px;transform-style:preserve-3d;transition:transform .05s linear;}
+.face{position:absolute;width:140px;height:140px;border:1px solid var(--violet);background:rgba(152,132,232,0.08);}
+.f-front{transform:translateZ(70px);}
+.f-back{transform:translateZ(-70px) rotateY(180deg);}
+.f-right{transform:rotateY(90deg) translateZ(70px);}
+.f-left{transform:rotateY(-90deg) translateZ(70px);}
+.f-top{transform:rotateX(90deg) translateZ(70px);}
+.f-bottom{transform:rotateX(-90deg) translateZ(70px);}
+
+/* science hub */
+.sci-group{margin-bottom:30px;}
+.sci-group h4{font-family:'Fraunces',serif;font-size:1.1rem;margin-bottom:10px;color:var(--amber);}
+
+/* reduced motion */
+html.reduce-motion .mo-svg{animation:none !important;}
+html.reduce-motion .enter-btn:hover{transform:none;}
+html.reduce-motion *{transition-duration:0.001ms !important;}
+
+/* responsive */
+@media (max-width:720px){
+  .navlinks{display:none;}
+  .hamburger{display:block;}
+  .room-grid{grid-template-columns:1fr 1fr;}
+  .eb-wrap{gap:30px;}
+  .cs-grid{grid-template-columns:repeat(6,26px);grid-template-rows:repeat(6,26px);}
+  .cs-cell{width:26px;height:26px;}
+}
+@media (max-width:480px){
+  .room-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav id="topnav">
+  <div class="brand" onclick="go('home')">
+    <span class="brand-mark">ILLUSION <em>MUSEUM</em></span>
+  </div>
+  <div class="navlinks" id="navlinks">
+    <button onclick="go('home')" data-nav="home"></button>
+    <button onclick="go('map')" data-nav="map"></button>
+    <button onclick="go('challenge-intro')" data-nav="challenge"></button>
+    <button onclick="go('science')" data-nav="science"></button>
+    <button onclick="go('about')" data-nav="about"></button>
+  </div>
+  <div class="nav-right">
+    <button class="icon-btn" onclick="go('collection')">♡ <span id="collect-label"></span></button>
+    <select id="langsel" onchange="setLang(this.value)">
+      <option value="hy">🇦🇲 Հայերեն</option>
+      <option value="ru">🇷🇺 Русский</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
+  </div>
+</nav>
+
+<button id="surprise-fab" onclick="surpriseMe()"></button>
+
+<div id="app"></div>
+
+<script>
+/* ============================= I18N ============================= */
+const I18N = {
+en:{
+  nav:{home:"Museum",map:"Rooms",challenge:"Challenge",science:"Science",about:"About",collectShort:"My Illusions"},
+  hero:{eyebrow:"A MUSEUM YOU WALK THROUGH WITH YOUR EYES",title:"ILLUSION MUSEUM",sub:"Can you trust your eyes?",enter:"ENTER THE MUSEUM",hint:"Seven rooms. No two visitors see them the same way."},
+  map:{eyebrow:"MUSEUM MAP",title:"Choose a room",lede:"Every room asks something different of your eyes. Walk through in order, or jump straight to what pulls you in."},
+  rooms:{
+    r1:{name:"Optical Illusions",short:"Lines that lie, patterns that drift.",hint:"Drag the slider"},
+    r2:{name:"Impossible Objects",short:"Shapes that only work from one angle.",hint:"Drag to change the angle"},
+    r3:{name:"Perspective Room",short:"The same size, wildly different.",hint:"Drag the slider"},
+    r4:{name:"Color Illusions",short:"Your brain never sees a color alone.",hint:"Move the slider"},
+    r5:{name:"Motion Illusions",short:"Nothing is moving. Something is moving.",hint:"Change the speed"},
+    r6:{name:"Mirror Room",short:"Symmetry, reflected and re-reflected.",hint:"Draw with your mouse"},
+    r7:{name:"3D Illusions",short:"Depth built from flat little lies.",hint:"Move your mouse over it"}
+  },
+  common:{prev:"← Previous Room",next:"Next Room →",back:"← Back to map",howItWorks:"HOW DOES IT WORK?",simple:"Simple",science:"Science",deep:"Deep Dive",save:"Add to My Collection",saved:"Saved to Collection",reveal:"Reveal",tryAgain:"Try again",speed:"Speed",direction:"Direction",angle:"Viewing angle",symmetry:"Symmetry",brightness:"Background brightness",clear:"Clear",reverse:"Reverse"
+  },
+  r1:{title:"Café Wall Illusion",desc:"The rows below are made only of straight horizontal lines. Shift the offset and watch them tilt — even though every line stays perfectly parallel.",offset:"Row offset",check:"Show they're parallel",explainSimple:"Your eye reads the staggered light/dark edges as evidence of a slope, even though there isn't one.",explainScience:"Contrast between adjacent tiles activates edge-detecting neurons unevenly along each row, producing a perceived tilt — this is the classic Café Wall effect, first documented on a café's tiled wall in Bristol.",explainDeep:"Border-locking theory suggests the visual system's early orientation-selective cells respond to the luminance gradients at tile boundaries, and small local tilt signals sum into a global perceived skew — a Gestalt grouping effect layered on low-level contrast processing."},
+  r2:{title:"The Impossible Triangle",desc:"This triangle can't exist — each corner is a valid 3D joint, but the whole shape only 'works' from one exact viewpoint. Drag to rotate the viewing angle and watch it fall apart.",explainSimple:"From straight on, your brain glues the three corners into one solid object. Move even slightly and the trick is exposed.",explainScience:"The Penrose triangle exploits the visual system's assumption that connected edges belong to a single rigid object — a shortcut that works for real scenes but breaks for a shape built purely to fool projection.",explainDeep:"Depth cues like occlusion and edge junctions are locally consistent at every corner, but globally contradictory — the figure has no single consistent 3D interpretation, only a family of 2D projections that each look locally valid."},
+  r3:{title:"Ebbinghaus Circles",desc:"The two orange circles are exactly the same size. Drag the slider to resize the surrounding circles and watch your perception change anyway.",explainSimple:"Big neighbors make a circle look small. Small neighbors make it look big. Same circle, same size, different feeling.",explainScience:"Size perception is relative, not absolute — the brain estimates an object's size partly by comparing it to nearby objects in the same visual context.",explainDeep:"This is often cited as evidence for context-dependent size coding in early visual areas, though the effect's exact neural locus (and how much it reflects low-level contrast vs. higher-level judgment) is still debated among perception researchers."},
+  r4:{title:"Same Gray, Different Story",desc:"Squares A and B are the exact same shade of gray. Move the slider to change the background and see how differently they read.",connect:"Connect A and B",explainSimple:"Your brain isn't just reading raw color — it's guessing what color something 'really is' after accounting for light and shadow.",explainScience:"This is simultaneous contrast: identical gray values are judged differently depending on the luminance of their immediate surroundings.",explainDeep:"Classic checker-shadow-style illusions suggest the visual system performs something like automatic lightness constancy — discounting apparent shadows and surrounding luminance to estimate surface reflectance, sometimes at the cost of literal accuracy."},
+  r5:{title:"Spinning Field",desc:"This pattern isn't actually rotating on its own — control the speed and direction and notice how motion still seems to linger even when you stop it.",explainSimple:"Repeating patterns can trick your motion-sensing cells into reporting movement that isn't really there.",explainScience:"Motion-detecting neurons in early visual cortex respond to repeating contrast edges in ways that can register apparent motion from purely static or slowly changing input.",explainDeep:"Related aftereffects (like the waterfall illusion) show that sustained exposure to one direction of motion can bias detectors and produce illusory motion in the opposite direction once the stimulus stops."},
+  r6:{title:"Kaleidoscope Mirror",desc:"Draw anywhere in the frame — your stroke is mirrored around the center. Change the symmetry to fold it into more reflections.",explainSimple:"Reflecting one small mark over and over creates a pattern that looks far more complex than the single line you actually drew.",explainScience:"Human perception is especially sensitive to symmetry — repeated, mirrored structure is processed as a strong organizing cue (a core Gestalt principle).",explainDeep:"Symmetry detection is thought to aid rapid figure-ground segmentation and object recognition, which may be why symmetric patterns feel instantly 'designed' even when generated from a single random gesture."},
+  r7:{title:"Floating Impossible Box",desc:"Move your mouse over the box. The faces are just flat panels, but the changing angles read as real depth.",explainSimple:"A few flat rectangles, tilted the right way, are enough for your brain to build a 3D box that isn't really there.",explainScience:"Depth from motion parallax and perspective cues are powerful enough that even a crude wireframe can trigger a strong 3D percept.",explainDeep:"This lightweight CSS-3D approximation uses real perspective transforms rather than a full 3D engine, trading some geometric fidelity for a fast, dependency-free experience."},
+  bve:{eyebrow:"YOUR BRAIN VS YOUR EYES",title:"Trust the answer, then trust the ruler",lede:"Look, guess, then measure. Your eyes and your brain don't always agree.",
+    q1:{q:"Which line is longer — top or bottom?",optA:"Top",optB:"Bottom",optC:"They're equal",correct:"optC",verdict:"They are exactly the same length.",explain:"The arrow-like fins (Müller-Lyer illusion) change how long the shaft looks, even though both shafts measure identically."},
+    q2:{q:"Which orange circle is bigger — left or right?",optA:"Left",optB:"Right",optC:"They're equal",correct:"optC",verdict:"Same circle. Same size. Every time.",explain:"This is the Ebbinghaus effect again — your judgment shifts with context, not with the object itself."},
+    q3:{q:"Is the horizontal or vertical line longer?",optA:"Horizontal",optB:"Vertical",optC:"They're equal",correct:"optC",verdict:"Equal down to the pixel.",explain:"Vertical lines are consistently overestimated relative to horizontal ones of the same length — the vertical–horizontal illusion."}
+  },
+  challenge:{eyebrow:"GAME MODE",title:"Illusion Challenge",lede:"10 quick rounds. Predict, interact, then find out if your eyes fooled you.",start:"Start the Challenge",of:"of",question:"Question",yourGuess:"Your guess",submit:"Lock in answer",next:"Next",finish:"See my score",scoreTitle:"Your Illusion Score",fooled:"Your eyes were fooled",solved:"You noticed the trick",messages:["Your eyes were fooled — most of the time.","A fair fight between your eyes and your brain.","You noticed the trick more often than not.","You survived the illusion museum with sharp eyes."],shareTitle:"I SURVIVED THE ILLUSION MUSEUM",illusionsLabel:"illusions",fooledLabel:"fooled me",solvedLabel:"I solved",share:"Share",copied:"Copied to clipboard",playAgain:"Play again"
+  },
+  wdys:{eyebrow:"WHAT DO YOU SEE?",title:"Two faces, or a vase?",lede:"Look at the shape below for a second before reading on.",question:"What did you see first?",optFaces:"Two faces",optVase:"A vase",revealTitle:"Both are there, all along.",revealBody:"This is a figure–ground reversal: the same lines support two completely valid readings, and your brain locks onto one at a time. Neither answer is more 'correct' — and it says nothing about your personality."},
+  science:{eyebrow:"SCIENCE MODE",title:"How illusions work",lede:"Every exhibit has its own explanation panel. Here they are gathered by the concept behind them.",groups:{depth:"Depth perception",contrast:"Contrast & lightness",motion:"Motion perception",gestalt:"Gestalt grouping"}},
+  collection:{eyebrow:"SAVED",title:"My Illusions",lede:"Everything you've hearted, kept on this device.",empty:"Nothing saved yet. Heart an illusion in any room to add it here.",remove:"Remove"},
+  about:{eyebrow:"ABOUT",title:"About this museum",body:"Illusion Museum is a small, interactive collection of classic visual illusions — built to be experimented with, not just looked at. Every room lets you change something with your own hands: a slider, a drag, a guess. Nothing here measures your intelligence, and nothing here is a substitute for a real perception-science course — just a place to notice, a little more closely, how strange your own eyes can be.",privacy:"Your language choice and saved illusions live only in this browser — nothing is sent anywhere."}
+},
+ru:{
+  nav:{home:"Музей",map:"Залы",challenge:"Испытание",science:"Наука",about:"О музее",collectShort:"Мои иллюзии"},
+  hero:{eyebrow:"МУЗЕЙ, ПО КОТОРОМУ ВЫ ИДЁТЕ СОБСТВЕННЫМИ ГЛАЗАМИ",title:"ILLUSION MUSEUM",sub:"Можешь ли ты доверять своим глазам?",enter:"ВОЙТИ В МУЗЕЙ",hint:"Семь залов. Каждый посетитель видит их по-своему."},
+  map:{eyebrow:"КАРТА МУЗЕЯ",title:"Выберите зал",lede:"Каждый зал испытывает ваше зрение по-своему. Идите по порядку — или сразу туда, куда тянет."},
+  rooms:{
+    r1:{name:"Оптические иллюзии",short:"Линии, которые лгут, узоры, которые плывут.",hint:"Потяните ползунок"},
+    r2:{name:"Невозможные объекты",short:"Фигуры, работающие только под одним углом.",hint:"Потяните, чтобы изменить угол"},
+    r3:{name:"Зал перспективы",short:"Один размер — совершенно разное впечатление.",hint:"Потяните ползунок"},
+    r4:{name:"Цветовые иллюзии",short:"Мозг никогда не видит цвет отдельно.",hint:"Подвиньте ползунок"},
+    r5:{name:"Иллюзии движения",short:"Ничего не движется. И всё же что-то движется.",hint:"Измените скорость"},
+    r6:{name:"Зеркальный зал",short:"Симметрия, отражённая и переотражённая.",hint:"Рисуйте мышью"},
+    r7:{name:"3D-иллюзии",short:"Глубина из плоской маленькой лжи.",hint:"Проведите мышью над фигурой"}
+  },
+  common:{prev:"← Предыдущий зал",next:"Следующий зал →",back:"← К карте музея",howItWorks:"КАК ЭТО РАБОТАЕТ?",simple:"Просто",science:"Наука",deep:"Глубже",save:"В мою коллекцию",saved:"Сохранено",reveal:"Показать",tryAgain:"Ещё раз",speed:"Скорость",direction:"Направление",angle:"Угол обзора",symmetry:"Симметрия",brightness:"Яркость фона",clear:"Очистить",reverse:"Обратно"
+  },
+  r1:{title:"Иллюзия «кафе-стена»",desc:"Ряды ниже состоят только из прямых горизонтальных линий. Сдвиньте смещение — и они словно наклонятся, хотя каждая линия остаётся строго параллельной.",offset:"Смещение ряда",check:"Показать, что они параллельны",explainSimple:"Глаз читает чередующиеся светлые и тёмные границы как признак наклона, которого на самом деле нет.",explainScience:"Контраст между соседними плитками неравномерно активирует нейроны, реагирующие на границы, создавая ощущение наклона — классический эффект «кафе-стены».",explainDeep:"Теория «блокировки границ» предполагает, что ранние ориентационно-чувствительные клетки реагируют на градиенты яркости на стыках плиток, а локальные сигналы наклона суммируются в общий перекос — эффект группировки поверх низкоуровневой обработки контраста."},
+  r2:{title:"Невозможный треугольник",desc:"Этот треугольник не может существовать — каждый угол сам по себе выглядит правдоподобно, но вся фигура «работает» только с одной точки обзора. Потяните, чтобы повернуть угол обзора.",explainSimple:"Прямо в лоб мозг склеивает три угла в один цельный объект. Чуть сдвиньтесь — и обман раскрыт.",explainScience:"Треугольник Пенроуза использует привычку зрительной системы считать соединённые края частью одного жёсткого объекта — удобный приём, который ломается на фигуре, созданной специально для обмана проекции.",explainDeep:"Признаки глубины (перекрытие, стыки рёбер) локально непротиворечивы в каждом углу, но глобально противоречат друг другу — у фигуры нет единой согласованной 3D-интерпретации, только семейство локально правдоподобных 2D-проекций."},
+  r3:{title:"Круги Эббингауза",desc:"Два оранжевых круга совершенно одинакового размера. Подвиньте ползунок, чтобы изменить окружающие круги, и понаблюдайте, как всё равно меняется восприятие.",explainSimple:"Большие соседи делают круг маленьким на вид. Маленькие соседи делают его большим. Круг тот же, размер тот же — ощущение другое.",explainScience:"Восприятие размера относительно, а не абсолютно — мозг оценивает размер объекта отчасти через сравнение с соседними объектами в том же зрительном контексте.",explainDeep:"Это часто приводят как пример контекстно-зависимого кодирования размера в ранних зрительных зонах, хотя точная нейронная основа эффекта всё ещё обсуждается исследователями восприятия."},
+  r4:{title:"Один серый, две истории",desc:"Квадраты A и B — абсолютно одинакового оттенка серого. Подвиньте ползунок, чтобы изменить фон, и посмотрите, насколько по-разному они читаются.",connect:"Соединить A и B",explainSimple:"Мозг считывает не просто «сырой» цвет — он угадывает, каким цвет является «на самом деле», учитывая свет и тень.",explainScience:"Это одновременный контраст: одинаковые серые значения воспринимаются по-разному в зависимости от яркости непосредственного окружения.",explainDeep:"Классические иллюзии в духе «шахматной доски и тени» предполагают, что зрительная система выполняет нечто вроде автоматической константности светлоты — отбрасывая видимые тени и фон, чтобы оценить истинную отражательную способность поверхности, иногда в ущерб буквальной точности."},
+  r5:{title:"Вращающееся поле",desc:"Этот узор на самом деле не вращается сам по себе — управляйте скоростью и направлением и заметьте, как ощущение движения задерживается, даже когда вы его останавливаете.",explainSimple:"Повторяющиеся узоры способны обмануть клетки, отвечающие за движение, заставив их «сообщить» о движении, которого нет.",explainScience:"Нейроны, детектирующие движение в ранней зрительной коре, реагируют на повторяющиеся контрастные границы так, что могут регистрировать кажущееся движение из статичного или медленно меняющегося изображения.",explainDeep:"Родственные последействия (например, иллюзия водопада) показывают, что длительное наблюдение движения в одном направлении смещает детекторы и порождает иллюзорное движение в обратном направлении после остановки стимула."},
+  r6:{title:"Зеркало-калейдоскоп",desc:"Рисуйте в любом месте рамки — ваш штрих отражается вокруг центра. Измените симметрию, чтобы добавить больше отражений.",explainSimple:"Многократное отражение одной маленькой отметки создаёт узор, который выглядит гораздо сложнее, чем реально нарисованная вами линия.",explainScience:"Человеческое восприятие особенно чувствительно к симметрии — повторяющаяся, зеркальная структура воспринимается как сильный организующий признак (ключевой принцип гештальта).",explainDeep:"Считается, что обнаружение симметрии помогает быстрому разделению фигуры и фона и распознаванию объектов — возможно, поэтому симметричные узоры сразу кажутся «продуманными», даже если созданы одним случайным жестом."},
+  r7:{title:"Парящий невозможный куб",desc:"Проведите мышью над кубом. Грани — просто плоские панели, но меняющиеся углы читаются как настоящая глубина.",explainSimple:"Несколько плоских прямоугольников, наклонённых нужным образом, — этого достаточно, чтобы мозг построил 3D-куб, которого на самом деле нет.",explainScience:"Признаки глубины из параллакса движения и перспективы настолько сильны, что даже грубый каркас способен вызвать устойчивое ощущение 3D.",explainDeep:"Это лёгкая CSS-3D-имитация на реальных перспективных трансформациях, а не полноценный 3D-движок — часть геометрической точности принесена в жертву скорости и отсутствию зависимостей."},
+  bve:{eyebrow:"МОЗГ ПРОТИВ ГЛАЗ",title:"Сначала поверь ответу, потом — линейке",lede:"Посмотрите, угадайте, затем измерьте. Глаза и мозг не всегда согласны друг с другом.",
+    q1:{q:"Какая линия длиннее — верхняя или нижняя?",optA:"Верхняя",optB:"Нижняя",optC:"Они равны",correct:"optC",verdict:"Они абсолютно одинаковой длины.",explain:"Стрелки на концах (иллюзия Мюллера-Лайера) меняют восприятие длины отрезка, хотя оба отрезка измеряются одинаково."},
+    q2:{q:"Какой оранжевый круг больше — левый или правый?",optA:"Левый",optB:"Правый",optC:"Они равны",correct:"optC",verdict:"Один и тот же круг. Один и тот же размер. Каждый раз.",explain:"Это снова эффект Эббингауза — ваша оценка меняется от контекста, а не от самого объекта."},
+    q3:{q:"Какая линия длиннее — горизонтальная или вертикальная?",optA:"Горизонтальная",optB:"Вертикальная",optC:"Они равны",correct:"optC",verdict:"Равны до пикселя.",explain:"Вертикальные линии стабильно кажутся длиннее горизонтальных той же длины — иллюзия вертикали-горизонтали."}
+  },
+  challenge:{eyebrow:"ИГРОВОЙ РЕЖИМ",title:"Испытание иллюзиями",lede:"10 быстрых раундов. Предскажите, взаимодействуйте, а затем узнайте, обманули ли вас глаза.",start:"Начать испытание",of:"из",question:"Вопрос",yourGuess:"Ваш ответ",submit:"Зафиксировать ответ",next:"Далее",finish:"Узнать результат",scoreTitle:"Ваш результат",fooled:"Ваши глаза были обмануты",solved:"Вы заметили обман",messages:["Ваши глаза были обмануты — почти всегда.","Честная борьба между глазами и мозгом.","Вы чаще замечали обман, чем нет.","Вы прошли музей иллюзий с острым взглядом."],shareTitle:"Я ПРОШЁЛ МУЗЕЙ ИЛЛЮЗИЙ",illusionsLabel:"иллюзий",fooledLabel:"обманули меня",solvedLabel:"я разгадал",share:"Поделиться",copied:"Скопировано",playAgain:"Играть снова"
+  },
+  wdys:{eyebrow:"ЧТО ВЫ ВИДИТЕ?",title:"Два лица или ваза?",lede:"Посмотрите на фигуру ниже секунду, прежде чем читать дальше.",question:"Что вы увидели первым?",optFaces:"Два лица",optVase:"Вазу",revealTitle:"Оба варианта были там всё время.",revealBody:"Это реверсия «фигура-фон»: одни и те же линии поддерживают два совершенно верных прочтения, и мозг фиксируется на одном за раз. Ни один ответ не более «правильный» — и он ничего не говорит о вашей личности."},
+  science:{eyebrow:"НАУЧНЫЙ РЕЖИМ",title:"Как работают иллюзии",lede:"У каждого экспоната своя пояснительная панель. Здесь они собраны по лежащим в основе понятиям.",groups:{depth:"Восприятие глубины",contrast:"Контраст и светлота",motion:"Восприятие движения",gestalt:"Гештальт-группировка"}},
+  collection:{eyebrow:"СОХРАНЁННОЕ",title:"Мои иллюзии",lede:"Всё, что вы отметили сердечком, хранится на этом устройстве.",empty:"Пока ничего не сохранено. Нажмите на сердечко у любой иллюзии, чтобы добавить её сюда.",remove:"Удалить"},
+  about:{eyebrow:"О МУЗЕЕ",title:"Об этом музее",body:"Illusion Museum — небольшая интерактивная коллекция классических зрительных иллюзий, созданная для того, чтобы с ней экспериментировали, а не просто на неё смотрели. В каждом зале можно что-то изменить своими руками: ползунок, перетаскивание, догадку. Здесь ничего не измеряет ваш интеллект, и это не замена настоящему курсу науки о восприятии — просто место, где можно чуть внимательнее заметить, насколько странными бывают собственные глаза.",privacy:"Выбор языка и сохранённые иллюзии хранятся только в этом браузере — никуда не отправляются."}
+},
+hy:{
+  nav:{home:"Թանգարան",map:"Սրահներ",challenge:"Փորձություն",science:"Գիտություն",about:"Մեր մասին",collectShort:"Իմ պատրանքները"},
+  hero:{eyebrow:"ԹԱՆԳԱՐԱՆ, ՈՐՈՎ ԴՈՒ ՔԱՅԼՈՒՄ ԵՍ ՍԵՓԱԿԱՆ ԱՉՔԵՐՈՎ",title:"ILLUSION MUSEUM",sub:"Կարո՞ղ ես վստահել աչքերիդ",enter:"ՄՏՆԵԼ ԹԱՆԳԱՐԱՆ",hint:"Յոթ սրահ։ Ոչ մի այցելու դրանք նույն կերպ չի տեսնում։"},
+  map:{eyebrow:"ԹԱՆԳԱՐԱՆԻ ՔԱՐՏԵԶ",title:"Ընտրիր սրահ",lede:"Յուրաքանչյուր սրահ քո աչքից այլ բան է խնդրում։ Անցիր հերթականությամբ, կամ ուղիղ գնա այնտեղ, ինչը քեզ ձգում է։"},
+  rooms:{
+    r1:{name:"Օպտիկական պատրանքներ",short:"Գծեր, որ ստում են, նախշեր, որ սահում են։",hint:"Քաշիր սահիչը"},
+    r2:{name:"Անհնար առարկաներ",short:"Ձևեր, որ աշխատում են միայն մեկ անկյունից։",hint:"Քաշիր՝ անկյունը փոխելու համար"},
+    r3:{name:"Հեռանկարի սրահ",short:"Նույն չափը՝ բոլորովին այլ տպավորություն։",hint:"Քաշիր սահիչը"},
+    r4:{name:"Գույնի պատրանքներ",short:"Ուղեղդ երբեք գույնը մենակ չի տեսնում։",hint:"Շարժիր սահիչը"},
+    r5:{name:"Շարժման պատրանքներ",short:"Ոչինչ չի շարժվում։ Եվ, այնուամենայնիվ, ինչ-որ բան շարժվում է։",hint:"Փոխիր արագությունը"},
+    r6:{name:"Հայելային սրահ",short:"Համաչափություն՝ արտացոլված ու վերարտացոլված։",hint:"Նկարիր մկնիկով"},
+    r7:{name:"3D պատրանքներ",short:"Խորություն՝ կառուցված փոքրիկ հարթ ստերից։",hint:"Անցկացրու մկնիկը դրա վրայով"}
+  },
+  common:{prev:"← Նախորդ սրահ",next:"Հաջորդ սրահ →",back:"← Վերադառնալ քարտեզին",howItWorks:"ԻՆՉՊԵ՞Ս Է ԱՅՆ ԱՇԽԱՏՈՒՄ",simple:"Պարզ",science:"Գիտականորեն",deep:"Խորությամբ",save:"Ավելացնել իմ հավաքածուին",saved:"Պահպանված է",reveal:"Ցույց տալ",tryAgain:"Կրկին փորձել",speed:"Արագություն",direction:"Ուղղություն",angle:"Դիտման անկյուն",symmetry:"Համաչափություն",brightness:"Ֆոնի պայծառություն",clear:"Մաքրել",reverse:"Հակառակ"
+  },
+  r1:{title:"«Սրճարանի պատի» պատրանք",desc:"Ստորև գտնվող շարքերը կազմված են միայն ուղիղ հորիզոնական գծերից։ Փոխիր շեղումը և նկատիր, թե ինչպես են դրանք թեքվում, թեև յուրաքանչյուր գիծ մնում է կատարելապես զուգահեռ։",offset:"Շարքի շեղում",check:"Ցույց տալ, որ զուգահեռ են",explainSimple:"Աչքդ հերթափոխվող բաց ու մուգ եզրերը ընկալում է որպես թեքության վկայություն, թեև իրականում թեքություն չկա։",explainScience:"Հարևան սալիկների միջև կոնտրաստը անհավասարաչափ ակտիվացնում է եզրեր ճանաչող նեյրոնները, ինչը ստեղծում է ընկալվող թեքություն. սա «սրճարանի պատի» դասական էֆեկտն է։",explainDeep:"Եզրերի «կողպման» տեսությունը ենթադրում է, որ տեսողական համակարգի վաղ, կողմնորոշման նկատմամբ զգայուն բջիջները արձագանքում են սալիկների սահմանների պայծառության գրադիենտներին, և տեղային փոքր թեքության ազդանշանները գումարվում են ընդհանուր ընկալվող շեղման մեջ։"},
+  r2:{title:"Անհնար եռանկյունին",desc:"Այս եռանկյունին չի կարող գոյություն ունենալ. յուրաքանչյուր անկյուն առանձին վավեր է թվում, բայց ամբողջ ձևը «աշխատում» է միայն մեկ ճշգրիտ կետից։ Քաշիր՝ դիտման անկյունը փոխելու համար և տես, թե ինչպես է այն քանդվում։",explainSimple:"Ուղիղ առջևից ուղեղդ երեք անկյունները միացնում է մեկ ամուր առարկայի։ Փոքր-ինչ շարժվելիս խաբեությունը բացահայտվում է։",explainScience:"Փենրոուզի եռանկյունին օգտագործում է տեսողական համակարգի այն ենթադրությունը, որ միացված եզրերը պատկանում են մեկ կոշտ առարկայի, ինչը ճիշտ է իրական տեսարանների համար, բայց քանդվում է հատուկ այդ խաբեության համար ստեղծված ձևի վրա։",explainDeep:"Խորության նշանները (ծածկում, եզրերի միացումներ) տեղայնորեն հետևողական են յուրաքանչյուր անկյունում, բայց ընդհանուր առմամբ հակասական. ձևը չունի մեկ միասնական եռաչափ մեկնաբանություն, այլ միայն տեղայնորեն վավեր երկչափ պրոյեկցիաների ընտանիք։"},
+  r3:{title:"Էբինգհաուզի շրջանները",desc:"Երկու նարնջագույն շրջանները ճշգրիտ նույն չափի են։ Քաշիր սահիչը՝ շրջապատող շրջանների չափը փոխելու համար և նկատիր, թե ինչպես է ընկալումդ, այնուամենայնիվ, փոխվում։",explainSimple:"Մեծ հարևանները շրջանը փոքր են ցույց տալիս։ Փոքր հարևանները՝ մեծ։ Նույն շրջանը, նույն չափը, այլ զգացողություն։",explainScience:"Չափի ընկալումը հարաբերական է, ոչ բացարձակ. ուղեղը առարկայի չափը գնահատում է մասամբ այն նույն տեսողական համատեքստում գտնվող մոտակա առարկաների հետ համեմատելով։",explainDeep:"Սա հաճախ բերվում է որպես վաղ տեսողական գոտիներում համատեքստից կախված չափի կոդավորման ապացույց, թեև էֆեկտի ճշգրիտ նյարդային հիմքը դեռ քննարկվում է ընկալման հետազոտողների կողմից։"},
+  r4:{title:"Նույն մոխրագույնը, երկու պատմություն",desc:"A և B քառակուսիները ճշգրիտ նույն երանգի մոխրագույն են։ Շարժիր սահիչը՝ ֆոնը փոխելու համար և տես, թե որքան տարբեր են դրանք ընկալվում։",connect:"Միացնել A-ն և B-ն",explainSimple:"Ուղեղդ պարզապես չի կարդում հում գույնը, այլ գուշակում է, թե ինչ գույն է առարկան «իրականում», հաշվի առնելով լույսն ու ստվերը։",explainScience:"Սա միաժամանակյա կոնտրաստ է. նույնական մոխրագույն արժեքները տարբեր կերպ են ընկալվում՝ կախված անմիջական շրջապատի պայծառությունից։",explainDeep:"«Շախմատային տախտակ-ստվեր» ոճի դասական պատրանքները ենթադրում են, որ տեսողական համակարգը կատարում է մի տեսակ ինքնաբերական լուսավորության հաստատունություն՝ հաշվարկից հանելով երևացող ստվերներն ու շրջապատող պայծառությունը, երբեմն ի հաշիվ բառացի ճշգրտության։"},
+  r5:{title:"Պտտվող դաշտ",desc:"Այս նախշը իրականում ինքն իրենից չի պտտվում. կառավարիր արագությունն ու ուղղությունը և նկատիր, թե ինչպես շարժման զգացողությունը մնում է անգամ դադարեցնելուց հետո։",explainSimple:"Կրկնվող նախշերը կարող են խաբել շարժում ընկալող բջիջներին՝ ստիպելով «հաղորդել» շարժման մասին, որը իրականում գոյություն չունի։",explainScience:"Վաղ տեսողական կեղևի շարժում հայտնաբերող նեյրոնները արձագանքում են կրկնվող կոնտրաստային եզրերին այնպես, որ կարող են գրանցել թվացյալ շարժում զուտ ստատիկ կամ դանդաղ փոփոխվող մուտքից։",explainDeep:"Առնչվող հետէֆեկտները (օրինակ՝ ջրվեժի պատրանքը) ցույց են տալիս, որ մեկ ուղղությամբ շարժման երկարատև դիտումը կարող է շեղել դետեկտորները և առաջացնել պատրանքային շարժում հակառակ ուղղությամբ՝ գրգռիչը դադարելուց հետո։"},
+  r6:{title:"Կալեիդոսկոպ հայելի",desc:"Նկարիր շրջանակի ցանկացած կետում. քո գիծը արտացոլվում է կենտրոնի շուրջ։ Փոխիր համաչափությունը՝ ավելի շատ արտացոլումներ ստանալու համար։",explainSimple:"Մեկ փոքրիկ նշանի կրկնվող արտացոլումը ստեղծում է նախշ, որը շատ ավելի բարդ է թվում, քան իրականում գծված մեկ գիծը։",explainScience:"Մարդու ընկալումը հատկապես զգայուն է համաչափության նկատմամբ. կրկնվող, հայելային կառուցվածքը ընկալվում է որպես ուժեղ կազմակերպող նշան (գեշտալտի հիմնական սկզբունքներից մեկը)։",explainDeep:"Ենթադրվում է, որ համաչափության հայտնաբերումն օգնում է արագ առանձնացնել կերպարը ֆոնից և ճանաչել առարկաները, ինչը գուցե բացատրում է, թե ինչու համաչափ նախշերն անմիջապես թվում են «մտածված», նույնիսկ եթե ստեղծված են մեկ պատահական շարժումից։"},
+  r7:{title:"Լողացող անհնար խորանարդ",desc:"Անցկացրու մկնիկը խորանարդի վրայով։ Երեսները պարզապես հարթ վահանակներ են, բայց փոփոխվող անկյունները ընկալվում են որպես իրական խորություն։",explainSimple:"Մի քանի հարթ ուղղանկյուններ, ճիշտ թեքված, բավական են, որպեսզի ուղեղդ կառուցի 3D խորանարդ, որը իրականում գոյություն չունի։",explainScience:"Շարժման պարալլաքսից և հեռանկարից եկող խորության նշանները այնքան ուժեղ են, որ նույնիսկ կոպիտ կմախքային պատկերը կարող է առաջացնել ուժեղ 3D զգացողություն։",explainDeep:"Սա թեթև CSS-3D մոտարկում է, որն օգտագործում է իրական հեռանկարային փոխակերպումներ, ոչ թե լիարժեք 3D շարժիչ. որոշ երկրաչափական ճշգրտություն զոհաբերվում է արագ, կախվածություններից զերծ փորձի համար։"},
+  bve:{eyebrow:"ՈՒՂԵՂԴ ԸՆԴԴԵՄ ԱՉՔԵՐԻԴ",title:"Նախ վստահիր պատասխանին, հետո՝ քանոնին",lede:"Նայիր, գուշակիր, հետո չափիր։ Աչքերդ ու ուղեղդ միշտ չէ, որ համաձայն են։",
+    q1:{q:"Ո՞ր գիծն է ավելի երկար՝ վերևինը թե ներքևինը",optA:"Վերևինը",optB:"Ներքևինը",optC:"Հավասար են",correct:"optC",verdict:"Դրանք ճշգրիտ նույն երկարությունն ունեն։",explain:"Ծայրերի սլաքաձև «փետուրները» (Մյուլլեր-Լայերի պատրանք) փոխում են գծի ընկալվող երկարությունը, թեև երկու գծերն էլ ունեն նույն չափը։"},
+    q2:{q:"Ո՞ր նարնջագույն շրջանն է ավելի մեծ՝ ձախինը թե աջինը",optA:"Ձախինը",optB:"Աջինը",optC:"Հավասար են",correct:"optC",verdict:"Նույն շրջանը։ Նույն չափը։ Ամեն անգամ։",explain:"Սա կրկին Էբինգհաուզի էֆեկտն է. քո գնահատականը փոխվում է համատեքստից, ոչ թե ինքնին առարկայից։"},
+    q3:{q:"Ո՞ր գիծն է ավելի երկար՝ հորիզոնականը թե ուղղահայացը",optA:"Հորիզոնականը",optB:"Ուղղահայացը",optC:"Հավասար են",correct:"optC",verdict:"Հավասար են՝ մինչև վերջին պիքսելը։",explain:"Ուղղահայաց գծերը կայուն կերպով գերագնահատվում են՝ համեմատած նույն երկարության հորիզոնական գծերի հետ. սա ուղղահայաց-հորիզոնական պատրանքն է։"}
+  },
+  challenge:{eyebrow:"ԽԱՂԻ ՌԵԺԻՄ",title:"Պատրանքների փորձություն",lede:"10 արագ փուլ։ Գուշակիր, փոխազդիր, հետո պարզիր՝ աչքերդ քեզ խաբե՞լ են։",start:"Սկսել փորձությունը",of:"-ից",question:"Հարց",yourGuess:"Քո գուշակությունը",submit:"Հաստատել պատասխանը",next:"Հաջորդը",finish:"Տեսնել իմ արդյունքը",scoreTitle:"Քո պատրանքային միավորը",fooled:"Աչքերդ խաբվել են",solved:"Դու նկատեցիր հնարքը",messages:["Աչքերդ խաբվել են՝ գրեթե միշտ։","Արդար պայքար աչքերիդ և ուղեղիդ միջև։","Դու հաճախ ես նկատել հնարքը, քան ոչ։","Դու անցար պատրանքների թանգարանով սուր հայացքով։"],shareTitle:"ԵՍ ԱՆՑԱ ՊԱՏՐԱՆՔՆԵՐԻ ԹԱՆԳԱՐԱՆՈՎ",illusionsLabel:"պատրանք",fooledLabel:"խաբեց ինձ",solvedLabel:"ես լուծեցի",share:"Կիսվել",copied:"Պատճենվեց",playAgain:"Կրկին խաղալ"
+  },
+  wdys:{eyebrow:"ԻՆՉ ԵՍ ՏԵՍՆՈՒՄ",title:"Երկու դեմք, թե՞ ծաղկաման",lede:"Մի պահ նայիր ստորև նշված ձևին, նախքան կկարդաս շարունակությունը։",question:"Ի՞նչ տեսար առաջինը",optFaces:"Երկու դեմք",optVase:"Ծաղկաման",revealTitle:"Երկուսն էլ եղել են այնտեղ, ամբողջ ժամանակ։",revealBody:"Սա «կերպար-ֆոն» շրջադարձ է. նույն գծերը ապահովում են երկու լիովին վավեր մեկնաբանություն, և ուղեղդ մեկ անգամում կողպվում է միայն մեկի վրա։ Ոչ մի պատասխան ավելի «ճիշտ» չէ, և դա ոչինչ չի ասում քո անհատականության մասին։"},
+  science:{eyebrow:"ԳԻՏԱԿԱՆ ՌԵԺԻՄ",title:"Ինչպես են աշխատում պատրանքները",lede:"Յուրաքանչյուր ցուցանմուշ ունի իր բացատրական վահանակը։ Այստեղ դրանք հավաքված են ըստ հիմքում ընկած սկզբունքի։",groups:{depth:"Խորության ընկալում",contrast:"Կոնտրաստ և լուսավորություն",motion:"Շարժման ընկալում",gestalt:"Գեշտալտ խմբավորում"}},
+  collection:{eyebrow:"ՊԱՀՊԱՆՎԱԾ",title:"Իմ պատրանքները",lede:"Այն ամենը, ինչ սրտիկով նշել ես, պահվում է միայն այս սարքում։",empty:"Դեռ ոչինչ պահպանված չէ։ Ցանկացած սրահում սեղմիր սրտիկի վրա՝ այստեղ ավելացնելու համար։",remove:"Հեռացնել"},
+  about:{eyebrow:"ՄԵՐ ՄԱՍԻՆ",title:"Այս թանգարանի մասին",body:"Illusion Museum-ը դասական տեսողական պատրանքների փոքրիկ, ինտերակտիվ հավաքածու է՝ ստեղծված փորձարկելու, ոչ թե պարզապես նայելու համար։ Յուրաքանչյուր սրահում կարող ես ինչ-որ բան փոխել սեփական ձեռքերով՝ սահիչ, քաշում, գուշակություն։ Այստեղ ոչինչ չի չափում քո բանականությունը, և այստեղ ոչինչ չի փոխարինում ընկալման գիտության իրական դասընթացին, պարզապես մի տեղ է՝ մի փոքր ավելի ուշադիր նկատելու, թե որքան տարօրինակ կարող են լինել սեփական աչքերդ։",privacy:"Քո լեզվի ընտրությունը և պահպանված պատրանքները պահվում են միայն այս բրաուզերում, ոչ մի տեղ չեն ուղարկվում։"}
+}
+};
+
+let lang = localStorage.getItem('im_lang') || 'hy';
+document.getElementById('langsel').value = lang;
+
+function t(key){
+  const parts = key.split('.');
+  let obj = I18N[lang];
+  for(const p of parts){ obj = obj ? obj[p] : undefined; }
+  return obj === undefined ? key : obj;
+}
+
+function setLang(l){
+  lang = l;
+  localStorage.setItem('im_lang', l);
+  document.getElementById('langsel').value = l;
+  renderChrome();
+  render();
+}
+
+/* ============================= STATE ============================= */
+const ROOM_IDS = ['r1','r2','r3','r4','r5','r6','r7'];
+let collection = JSON.parse(localStorage.getItem('im_collection') || '[]');
+function isSaved(id){ return collection.includes(id); }
+function toggleSave(id){
+  if(isSaved(id)) collection = collection.filter(x=>x!==id);
+  else collection.push(id);
+  localStorage.setItem('im_collection', JSON.stringify(collection));
+  render();
+}
+const SAVEABLE_TITLES = {}; // filled per-view for collection display
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduceMotion) document.documentElement.classList.add('reduce-motion');
+
+let route = location.hash.replace('#','') || 'home';
+window.addEventListener('hashchange', ()=>{ route = location.hash.replace('#','') || 'home'; render(); window.scrollTo(0,0); });
+function go(r){ location.hash = r; }
+
+/* ============================= CHROME (nav) ============================= */
+function renderChrome(){
+  const n = I18N[lang].nav;
+  document.querySelector('[data-nav="home"]').textContent = n.home;
+  document.querySelector('[data-nav="map"]').textContent = n.map;
+  document.querySelector('[data-nav="challenge"]').textContent = n.challenge;
+  document.querySelector('[data-nav="science"]').textContent = n.science;
+  document.querySelector('[data-nav="about"]').textContent = n.about;
+  document.getElementById('collect-label').textContent = n.collectShort;
+  document.getElementById('surprise-fab').textContent = (lang==='hy'?'ԶԱՐՄԱՑՐՈՒ ԻՆՁ':lang==='ru'?'УДИВИ МЕНЯ':'SURPRISE ME');
+}
+
+function surpriseMe(){
+  const pool = [...ROOM_IDS.map(r=>'room-'+r), 'bve', 'wdys'];
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  go(pick);
+}
+
+/* ============================= RENDER ROUTER ============================= */
+function render(){
+  const app = document.getElementById('app');
+  let html = '';
+  const base = route.split('/')[0];
+  document.querySelectorAll('.navlinks button').forEach(b=>b.classList.remove('active'));
+
+  if(base === 'home') { html = viewHome(); }
+  else if(base === 'map') { html = viewMap(); mark('map'); }
+  else if(base === 'room-r1'){ html = viewRoom('r1'); mark('map'); }
+  else if(base === 'room-r2'){ html = viewRoom('r2'); mark('map'); }
+  else if(base === 'room-r3'){ html = viewRoom('r3'); mark('map'); }
+  else if(base === 'room-r4'){ html = viewRoom('r4'); mark('map'); }
+  else if(base === 'room-r5'){ html = viewRoom('r5'); mark('map'); }
+  else if(base === 'room-r6'){ html = viewRoom('r6'); mark('map'); }
+  else if(base === 'room-r7'){ html = viewRoom('r7'); mark('map'); }
+  else if(base === 'bve'){ html = viewBVE(); }
+  else if(base === 'wdys'){ html = viewWDYS(); }
+  else if(base === 'challenge-intro'){ html = viewChallengeIntro(); mark('challenge'); }
+  else if(base === 'challenge-play'){ html = viewChallengePlay(); mark('challenge'); }
+  else if(base === 'challenge-score'){ html = viewChallengeScore(); mark('challenge'); }
+  else if(base === 'science'){ html = viewScience(); mark('science'); }
+  else if(base === 'collection'){ html = viewCollection(); }
+  else if(base === 'about'){ html = viewAbout(); mark('about'); }
+  else { html = viewHome(); }
+
+  app.innerHTML = html;
+  window.scrollTo(0,0);
+  afterRender(base);
+}
+function mark(name){ const el=document.querySelector('[data-nav="'+name+'"]'); if(el) el.classList.add('active'); }
+
+/* ============================= VIEWS ============================= */
+function viewHome(){
+  const h = I18N[lang].hero;
+  return `
+  <section class="view active" id="view-home">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow">${h.eyebrow}</div>
+      <h1 class="hero-title">${h.title}</h1>
+      <p class="hero-sub">"${h.sub}"</p>
+      <button class="enter-btn" onclick="go('map')">${h.enter}</button>
+      <p class="hero-hint">${h.hint}</p>
+    </div>
+  </section>`;
+}
+
+function roomDescriptor(id){
+  const idx = ROOM_IDS.indexOf(id)+1;
+  return { num: String(idx).padStart(2,'0'), meta: I18N[lang].rooms[id] };
+}
+
+function viewMap(){
+  const m = I18N[lang].map;
+  let cards = ROOM_IDS.map(id=>{
+    const d = roomDescriptor(id);
+    return `<div class="room-card" onclick="go('room-${id}')">
+      <div>
+        <span class="rn">${d.num}</span>
+        <h3>${d.meta.name}</h3>
+        <p>${d.meta.short}</p>
+      </div>
+      <span class="go">→</span>
+    </div>`;
+  }).join('');
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <span class="eyebrow">${m.eyebrow}</span>
+      <h2 class="section-title">${m.title}</h2>
+      <p class="section-lede">${m.lede}</p>
+    </div>
+    <div class="wrap">
+      <div class="room-grid">${cards}</div>
+    </div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+
+function exhibitShell(id, roomKey, innerStage, controlsHtml, hintKey){
+  const r = I18N[lang][roomKey];
+  const saved = isSaved(roomKey);
+  const c = I18N[lang].common;
+  return `
+  <div class="exhibit">
+    <div class="exhibit-head">
+      <h3>${r.title}</h3>
+      <button class="heart-btn ${saved?'saved':''}" onclick="toggleSave('${roomKey}')" title="${saved?c.saved:c.save}">${saved?'♥':'♡'}</button>
+    </div>
+    <p>${r.desc}</p>
+    <div class="stage" id="stage-${roomKey}">
+      ${innerStage}
+      ${hintKey ? `<div class="hint-chip">${hintKey}</div>` : ''}
+    </div>
+    ${controlsHtml||''}
+    <div class="science">
+      <button class="science-toggle" onclick="toggleSci('${roomKey}')">▸ ${c.howItWorks}</button>
+      <div class="science-body" id="sci-${roomKey}">
+        <div class="sci-tabs">
+          <button class="sci-tab active" onclick="sciTab('${roomKey}','simple')">${c.simple}</button>
+          <button class="sci-tab" onclick="sciTab('${roomKey}','science')">${c.science}</button>
+          <button class="sci-tab" onclick="sciTab('${roomKey}','deep')">${c.deep}</button>
+        </div>
+        <div class="sci-pane active" id="sci-${roomKey}-simple">${r.explainSimple}</div>
+        <div class="sci-pane" id="sci-${roomKey}-science">${r.explainScience}</div>
+        <div class="sci-pane" id="sci-${roomKey}-deep">${r.explainDeep}</div>
+      </div>
+    </div>
+  </div>`;
+}
+function toggleSci(id){
+  document.getElementById('sci-'+id).classList.toggle('open');
+}
+function sciTab(id, tab){
+  document.querySelectorAll('#sci-'+id+' .sci-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#sci-'+id+' .sci-pane').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('sci-'+id+'-'+tab).classList.add('active');
+}
+
+function viewRoom(id){
+  const d = roomDescriptor(id);
+  const c = I18N[lang].common;
+  const idx = ROOM_IDS.indexOf(id);
+  const prevId = ROOM_IDS[(idx-1+ROOM_IDS.length)%ROOM_IDS.length];
+  const nextId = ROOM_IDS[(idx+1)%ROOM_IDS.length];
+
+  let exhibitHtml = '';
+  if(id==='r1') exhibitHtml = exhibitR1();
+  if(id==='r2') exhibitHtml = exhibitR2();
+  if(id==='r3') exhibitHtml = exhibitR3();
+  if(id==='r4') exhibitHtml = exhibitR4();
+  if(id==='r5') exhibitHtml = exhibitR5();
+  if(id==='r6') exhibitHtml = exhibitR6();
+  if(id==='r7') exhibitHtml = exhibitR7();
+
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <div class="room-crumb"><button onclick="go('map')">${c.back}</button></div>
+      <span class="eyebrow">${d.num} — ${I18N[lang].rooms[id].name.toUpperCase()}</span>
+      <h2 class="section-title">${I18N[lang].rooms[id].name}</h2>
+    </div>
+    <div class="wrap">
+      ${exhibitHtml}
+      <div class="room-nav">
+        <button class="mini-btn" onclick="go('room-${prevId}')">${c.prev}</button>
+        <button class="mini-btn" onclick="go('room-${nextId}')">${c.next}</button>
+      </div>
+    </div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+
+/* ---- R1: cafe wall ---- */
+function exhibitR1(){
+  const r = I18N[lang].r1, c = I18N[lang].common;
+  const rows = 8, cols = 16;
+  let rowsHtml = '';
+  for(let ri=0;ri<rows;ri++){
+    rowsHtml += `<div class="cw-row" data-row="${ri}">`;
+    for(let ci=0;ci<cols;ci++){
+      rowsHtml += `<div style="background:${ci%2===0?'#EEE9DF':'#0A0A0D'}"></div>`;
+    }
+    rowsHtml += `</div>`;
+  }
+  const stage = `<div class="cw-canvas" id="cwCanvas" style="border-top:2px solid #444;border-bottom:2px solid #444;">${rowsHtml}</div>`;
+  const controls = `<div class="controls-row">
+    <div class="control"><label>${r.offset}</label><input type="range" id="cwOffset" min="0" max="10" value="0" oninput="cwUpdate(this.value)"></div>
+    <button class="mini-btn" id="cwCheckBtn" onclick="cwCheck()">${r.check}</button>
+  </div>`;
+  return exhibitShell('r1','r1',stage,controls,I18N[lang].rooms.r1.hint);
+}
+function cwUpdate(v){
+  document.querySelectorAll('#cwCanvas .cw-row').forEach((row,i)=>{
+    const off = (i%2===0) ? 0 : v;
+    row.style.transform = `translateX(${off*2}px)`;
+    row.style.borderTop = i>0 ? '2px solid #555' : 'none';
+  });
+}
+let cwChecked=false;
+function cwCheck(){
+  cwChecked=!cwChecked;
+  document.querySelectorAll('#cwCanvas .cw-row').forEach((row)=>{
+    row.style.borderTop = cwChecked ? '1px solid #E8A33D' : 'none';
+  });
+}
+
+/* ---- R2: impossible triangle morph ---- */
+function exhibitR2(){
+  const r = I18N[lang].r2;
+  const triangleSvg = (broken)=>`
+    <svg viewBox="0 0 240 220" width="240" height="220">
+      <g stroke="#E8A33D" stroke-width="3" fill="rgba(232,163,61,0.06)">
+        <path d="M120 20 L${broken?40:20} 190 L${broken?200:220} 190 Z" />
+        <path d="M120 20 L60 160 L100 160 L140 60 Z" fill="rgba(152,132,232,0.12)" stroke="#9884E8"/>
+        <path d="M60 190 L180 190 L150 130 L90 130 Z" fill="rgba(238,233,223,0.08)" stroke="#EEE9DF"/>
+      </g>
+    </svg>`;
+  const stage = `<div class="pz-wrap"><div id="pzA">${triangleSvg(false)}</div><div id="pzB" style="opacity:0;position:absolute;inset:0;">${triangleSvg(true)}</div></div>`;
+  const controls = `<div class="controls-row">
+    <div class="control"><label>${I18N[lang].common.angle}</label><input type="range" id="pzAngle" min="0" max="100" value="0" oninput="pzUpdate(this.value)"></div>
+  </div>`;
+  return exhibitShell('r2','r2',stage,controls,I18N[lang].rooms.r2.hint);
+}
+function pzUpdate(v){
+  const b = document.getElementById('pzB');
+  const a = document.getElementById('pzA');
+  if(!b) return;
+  b.style.opacity = v/100;
+  a.style.opacity = 1-(v/100*0.7);
+  document.getElementById('pzA').parentElement.style.transform = `rotate(${v*0.6}deg)`;
+}
+
+/* ---- R3: ebbinghaus ---- */
+function exhibitR3(){
+  const r = I18N[lang].r3;
+  const stage = `<div class="eb-wrap">
+    <div class="eb-ring" id="ebRingL"></div>
+    <div class="eb-ring" id="ebRingR"></div>
+  </div>`;
+  const controls = `<div class="controls-row">
+    <div class="control"><label>${I18N[lang].common.symmetry==='Symmetry'?'Surrounding size':I18N[lang].common.symmetry}</label>
+    <input type="range" id="ebSize" min="10" max="70" value="55" oninput="ebUpdate(this.value)"></div>
+  </div>`;
+  return exhibitShell('r3','r3',stage,controls,I18N[lang].rooms.r3.hint);
+}
+function ebRender(size){
+  const mk = (n,s,gap)=>{
+    let items='';
+    const R = 70;
+    for(let i=0;i<n;i++){
+      const ang = (i/n)*2*Math.PI;
+      const x = 90+Math.cos(ang)*R, y = 90+Math.sin(ang)*R;
+      items += `<div class="eb-small" style="position:absolute;left:${x-s/2}px;top:${y-s/2}px;width:${s}px;height:${s}px;"></div>`;
+    }
+    return `<div style="position:relative;width:180px;height:180px;">${items}<div class="eb-center" style="position:absolute;left:65px;top:65px;width:50px;height:50px;"></div></div>`;
+  };
+  document.getElementById('ebRingL').innerHTML = mk(6, 80-size, 0);
+  document.getElementById('ebRingR').innerHTML = mk(8, size, 0);
+}
+function ebUpdate(v){ ebRender(Number(v)); }
+
+/* ---- R4: checker shadow / simultaneous contrast ---- */
+function exhibitR4(){
+  const r = I18N[lang].r4;
+  let grid='';
+  for(let i=0;i<64;i++){
+    const row=Math.floor(i/8), col=i%8;
+    const isA = row===3&&col===2;
+    const isB = row===5&&col===5;
+    const light = (row+col)%2===0;
+    grid += `<div class="cs-cell" id="${isA?'csA':isB?'csB':''}" style="background:${isA||isB?'#808080':(light?'#3a3a3a':'#1a1a1a')}"></div>`;
+  }
+  const stage = `<div style="position:relative;">
+    <div id="csOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></div>
+    <div class="cs-grid" id="csGrid" style="filter:brightness(1);">${grid}</div>
+  </div>`;
+  const controls = `<div class="controls-row">
+    <div class="control"><label>${I18N[lang].r4.title.includes('Gray')||true?I18N[lang].common.brightness:''}</label>
+    <input type="range" id="csBright" min="40" max="160" value="100" oninput="csUpdate(this.value)"></div>
+    <button class="mini-btn" id="csConnectBtn" onclick="csConnect()">${r.connect}</button>
+  </div>`;
+  return exhibitShell('r4','r4',stage,controls,'');
+}
+function csUpdate(v){
+  document.getElementById('csGrid').style.filter = 'brightness('+(v/100)+')';
+}
+let csConnected=false;
+function csConnect(){
+  csConnected=!csConnected;
+  const a=document.getElementById('csA'), b=document.getElementById('csB');
+  if(!a||!b) return;
+  a.style.outline = csConnected ? '2px solid #E8A33D' : 'none';
+  b.style.outline = csConnected ? '2px solid #E8A33D' : 'none';
+  const overlay = document.getElementById('csOverlay');
+  overlay.innerHTML = csConnected ? `<div style="position:absolute;left:68px;top:100px;width:170px;height:32px;background:rgba(128,128,128,0.9);transform:rotate(38deg);transform-origin:left center;"></div>` : '';
+}
+
+/* ---- R5: motion ---- */
+function exhibitR5(){
+  const r = I18N[lang].r5;
+  const rings = [1,2,3,4,5,6].map(i=>`<circle cx="130" cy="130" r="${i*18}" fill="none" stroke="${i%2===0?'#E8A33D':'#9884E8'}" stroke-width="7" stroke-dasharray="10 14"/>`).join('');
+  const stage = `<svg class="mo-svg" id="moSvg" viewBox="0 0 260 260" width="240" height="240" style="animation-duration:6s;">${rings}</svg>`;
+  const controls = `<div class="controls-row">
+    <div class="control"><label>${I18N[lang].common.speed}</label><input type="range" id="moSpeed" min="1" max="20" value="10" oninput="moUpdate(this.value)"></div>
+    <button class="mini-btn" onclick="moReverse()">${I18N[lang].common.reverse}</button>
+  </div>`;
+  return exhibitShell('r5','r5',stage,controls,'');
+}
+function moUpdate(v){
+  const svg = document.getElementById('moSvg');
+  if(!svg) return;
+  const dur = (21-v)*0.6;
+  svg.style.animationDuration = dur+'s';
+}
+let moDir=1;
+function moReverse(){
+  moDir*=-1;
+  const svg = document.getElementById('moSvg');
+  svg.style.animationDirection = moDir>0?'normal':'reverse';
+}
+
+/* ---- R6: mirror canvas ---- */
+function exhibitR6(){
+  const r = I18N[lang].r6;
+  const stage = `<canvas id="mirrorCanvas" width="320" height="260"></canvas>`;
+  const controls = `<div class="controls-row">
+    <div class="control"><label>${I18N[lang].common.symmetry}</label>
+      <input type="range" id="mrSym" min="2" max="10" step="2" value="6" oninput="mrSymUpdate()"></div>
+    <button class="mini-btn" onclick="mrClear()">${I18N[lang].common.clear}</button>
+  </div>`;
+  return exhibitShell('r6','r6',stage,controls,I18N[lang].rooms.r6.hint);
+}
+let mrCtx, mrDrawing=false, mrSym=6;
+function initMirror(){
+  const cv = document.getElementById('mirrorCanvas');
+  if(!cv) return;
+  mrCtx = cv.getContext('2d');
+  mrCtx.fillStyle = '#0A0A0D'; mrCtx.fillRect(0,0,cv.width,cv.height);
+  mrCtx.lineWidth = 2.5; mrCtx.lineCap='round';
+  const pos = e=>{
+    const rect = cv.getBoundingClientRect();
+    const cx = (e.touches?e.touches[0].clientX:e.clientX) - rect.left;
+    const cy = (e.touches?e.touches[0].clientY:e.clientY) - rect.top;
+    return {x:cx,y:cy};
+  };
+  let last=null;
+  const start = e=>{ mrDrawing=true; last=pos(e); e.preventDefault(); };
+  const move = e=>{
+    if(!mrDrawing) return;
+    const p = pos(e);
+    drawMirrored(last,p);
+    last = p;
+    e.preventDefault();
+  };
+  const end = ()=>{ mrDrawing=false; last=null; };
+  cv.addEventListener('mousedown',start); cv.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  cv.addEventListener('touchstart',start,{passive:false}); cv.addEventListener('touchmove',move,{passive:false}); cv.addEventListener('touchend',end);
+}
+function drawMirrored(p0,p1){
+  const cx = mrCtx.canvas.width/2, cy = mrCtx.canvas.height/2;
+  const hue = 30 + (Date.now()/20 % 260);
+  mrCtx.strokeStyle = `hsl(${hue},70%,65%)`;
+  for(let i=0;i<mrSym;i++){
+    const ang = (i/mrSym)*2*Math.PI;
+    const rot = (pt)=>{
+      const dx = pt.x-cx, dy = pt.y-cy;
+      const rx = dx*Math.cos(ang)-dy*Math.sin(ang);
+      const ry = dx*Math.sin(ang)+dy*Math.cos(ang);
+      return {x:cx+rx,y:cy+ry};
+    };
+    const a0 = rot(p0), a1 = rot(p1);
+    mrCtx.beginPath(); mrCtx.moveTo(a0.x,a0.y); mrCtx.lineTo(a1.x,a1.y); mrCtx.stroke();
+    const mrr = (pt)=>({x: cx-(pt.x-cx), y: pt.y});
+    const b0 = rot(mrr(p0)), b1 = rot(mrr(p1));
+    mrCtx.beginPath(); mrCtx.moveTo(b0.x,b0.y); mrCtx.lineTo(b1.x,b1.y); mrCtx.stroke();
+  }
+}
+function mrSymUpdate(){ mrSym = Number(document.getElementById('mrSym').value); }
+function mrClear(){
+  if(!mrCtx) return;
+  mrCtx.fillStyle = '#0A0A0D'; mrCtx.fillRect(0,0,mrCtx.canvas.width,mrCtx.canvas.height);
+}
+
+/* ---- R7: 3D box ---- */
+function exhibitR7(){
+  const stage = `<div class="scene3d" id="sceneWrap"><div class="cube" id="cube3d">
+    <div class="face f-front"></div><div class="face f-back"></div>
+    <div class="face f-right"></div><div class="face f-left"></div>
+    <div class="face f-top"></div><div class="face f-bottom"></div>
+  </div></div>`;
+  return exhibitShell('r7','r7',stage,'',I18N[lang].rooms.r7.hint);
+}
+function init3d(){
+  const wrap = document.getElementById('sceneWrap');
+  const cube = document.getElementById('cube3d');
+  if(!wrap||!cube) return;
+  wrap.addEventListener('mousemove', e=>{
+    const rect = wrap.getBoundingClientRect();
+    const px = (e.clientX-rect.left)/rect.width - 0.5;
+    const py = (e.clientY-rect.top)/rect.height - 0.5;
+    cube.style.transform = `rotateY(${px*80}deg) rotateX(${-py*80}deg)`;
+  });
+  wrap.addEventListener('mouseleave', ()=>{ cube.style.transform = 'rotateY(25deg) rotateX(-15deg)'; });
+  cube.style.transform = 'rotateY(25deg) rotateX(-15deg)';
+}
+
+/* ============================= BRAIN VS EYES ============================= */
+function viewBVE(){
+  const b = I18N[lang].bve;
+  const qs = ['q1','q2','q3'];
+  const cards = qs.map(qid=>bveCard(qid)).join('');
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <div class="room-crumb"><button onclick="go('map')">${I18N[lang].common.back}</button></div>
+      <span class="eyebrow">${b.eyebrow}</span>
+      <h2 class="section-title">${b.title}</h2>
+      <p class="section-lede">${b.lede}</p>
+    </div>
+    <div class="wrap">${cards}</div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+function bveVisual(qid){
+  if(qid==='q1'){
+    return `<div style="display:flex;flex-direction:column;gap:30px;align-items:center;">
+      <svg width="220" height="30"><line x1="30" y1="15" x2="190" y2="15" stroke="#EEE9DF" stroke-width="2"/><path d="M30 15 L45 6 M30 15 L45 24 M190 15 L175 6 M190 15 L175 24" stroke="#EEE9DF" stroke-width="2"/></svg>
+      <svg width="220" height="30"><line x1="30" y1="15" x2="190" y2="15" stroke="#EEE9DF" stroke-width="2"/><path d="M30 15 L15 6 M30 15 L15 24 M190 15 L205 6 M190 15 L205 24" stroke="#EEE9DF" stroke-width="2"/></svg>
+    </div>`;
+  }
+  if(qid==='q2'){
+    return `<div style="display:flex;gap:60px;">
+      <div style="position:relative;width:110px;height:110px;"><div style="position:absolute;inset:0;border:2px dashed #4a4a4a;border-radius:50%;"></div><div style="position:absolute;left:35px;top:35px;width:40px;height:40px;background:#E8A33D;border-radius:50%;"></div></div>
+      <div style="position:relative;width:110px;height:110px;"><div style="position:absolute;left:-20px;top:-20px;right:-20px;bottom:-20px;border:2px dashed #4a4a4a;border-radius:50%;"></div><div style="position:absolute;left:35px;top:35px;width:40px;height:40px;background:#E8A33D;border-radius:50%;"></div></div>
+    </div>`;
+  }
+  return `<svg width="180" height="180"><line x1="20" y1="90" x2="160" y2="90" stroke="#9884E8" stroke-width="4"/><line x1="90" y1="15" x2="90" y2="165" stroke="#9884E8" stroke-width="4"/></svg>`;
+}
+function bveCard(qid){
+  const q = I18N[lang].bve[qid];
+  return `
+  <div class="quiz-card">
+    <div class="quiz-q">${q.q}</div>
+    <div class="stage" style="min-height:160px;">${bveVisual(qid)}</div>
+    <div class="quiz-options" id="bve-opts-${qid}">
+      <button class="quiz-opt" onclick="bvePick('${qid}','optA',this)">${q.optA}</button>
+      <button class="quiz-opt" onclick="bvePick('${qid}','optB',this)">${q.optB}</button>
+      <button class="quiz-opt" onclick="bvePick('${qid}','optC',this)">${q.optC}</button>
+    </div>
+    <div class="reveal" id="bve-reveal-${qid}">
+      <div class="verdict">${q.verdict}</div>
+      <p>${q.explain}</p>
+    </div>
+  </div>`;
+}
+function bvePick(qid, opt, el){
+  document.querySelectorAll('#bve-opts-'+qid+' .quiz-opt').forEach(b=>b.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('bve-reveal-'+qid).classList.add('show');
+}
+
+/* ============================= WHAT DO YOU SEE ============================= */
+function viewWDYS(){
+  const w = I18N[lang].wdys;
+  const svg = `<svg viewBox="0 0 240 260" width="220" height="230">
+    <rect width="240" height="260" fill="#0A0A0D"/>
+    <path d="M120 20 C 95 60 95 90 80 110 C 60 130 60 160 80 190 C 95 215 145 215 160 190 C 180 160 180 130 160 110 C 145 90 145 60 120 20 Z" fill="#EEE9DF"/>
+    <path d="M120 20 C 95 60 95 90 80 110 L 20 60 Z" fill="#0A0A0D"/>
+    <path d="M120 20 C 145 60 145 90 160 110 L 220 60 Z" fill="#0A0A0D"/>
+  </svg>`;
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <div class="room-crumb"><button onclick="go('map')">${I18N[lang].common.back}</button></div>
+      <span class="eyebrow">${w.eyebrow}</span>
+      <h2 class="section-title">${w.title}</h2>
+      <p class="section-lede">${w.lede}</p>
+    </div>
+    <div class="wrap">
+      <div class="exhibit">
+        <div class="exhibit-head"><h3>${w.question}</h3>
+          <button class="heart-btn ${isSaved('wdys')?'saved':''}" onclick="toggleSave('wdys')">${isSaved('wdys')?'♥':'♡'}</button>
+        </div>
+        <div class="stage">${svg}</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="wdysPick('faces',this)">${w.optFaces}</button>
+          <button class="quiz-opt" onclick="wdysPick('vase',this)">${w.optVase}</button>
+        </div>
+        <div class="reveal" id="wdys-reveal">
+          <div class="verdict">${w.revealTitle}</div>
+          <p>${w.revealBody}</p>
+        </div>
+      </div>
+    </div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+function wdysPick(v, el){
+  document.querySelectorAll('.quiz-opt').forEach(b=>{ if(b.parentElement.parentElement.querySelector('#wdys-reveal')) b.classList.remove('picked'); });
+  el.classList.add('picked');
+  document.getElementById('wdys-reveal').classList.add('show');
+}
+
+/* ============================= CHALLENGE ============================= */
+const CHALLENGE_POOL = ['q1','q2','q3']; // base bve pool reused + extra generated variants below
+function buildChallengeSet(){
+  // build 10 rounds by cycling bve-style questions with slight variety flags
+  const base = ['q1','q2','q3'];
+  const set = [];
+  for(let i=0;i<10;i++){ set.push(base[i%base.length]); }
+  return set;
+}
+let challengeState = null;
+function viewChallengeIntro(){
+  const ch = I18N[lang].challenge;
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <span class="eyebrow">${ch.eyebrow}</span>
+      <h2 class="section-title">${ch.title}</h2>
+      <p class="section-lede">${ch.lede}</p>
+      <button class="enter-btn" onclick="startChallenge()">${ch.start}</button>
+    </div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+function startChallenge(){
+  challengeState = { set: buildChallengeSet(), idx:0, fooled:0, solved:0, answered:false };
+  go('challenge-play');
+}
+function viewChallengePlay(){
+  if(!challengeState){ startChallenge(); }
+  const ch = I18N[lang].challenge;
+  const qid = challengeState.set[challengeState.idx];
+  const q = I18N[lang].bve[qid];
+  let progress = '';
+  for(let i=0;i<10;i++){
+    progress += `<span class="${i<challengeState.idx?'done':(i===challengeState.idx?'now':'')}"></span>`;
+  }
+  return `
+  <section class="view active">
+    <div class="room-hero wrap" style="padding-top:110px;">
+      <span class="eyebrow">${ch.eyebrow} — ${ch.question} ${challengeState.idx+1} ${ch.of} 10</span>
+      <div class="challenge-progress">${progress}</div>
+    </div>
+    <div class="wrap">
+      <div class="quiz-card">
+        <div class="quiz-q">${q.q}</div>
+        <div class="stage" style="min-height:160px;">${bveVisual(qid)}</div>
+        <div class="quiz-options" id="ch-opts">
+          <button class="quiz-opt" onclick="chPick('optA',this)">${q.optA}</button>
+          <button class="quiz-opt" onclick="chPick('optB',this)">${q.optB}</button>
+          <button class="quiz-opt" onclick="chPick('optC',this)">${q.optC}</button>
+        </div>
+        <div class="reveal" id="ch-reveal">
+          <div class="verdict">${q.verdict}</div>
+          <p>${q.explain}</p>
+          <div style="margin-top:18px;">
+            <button class="mini-btn" onclick="chNext()">${challengeState.idx<9?ch.next:ch.finish}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+function chPick(opt, el){
+  if(challengeState.answered) return;
+  challengeState.answered = true;
+  document.querySelectorAll('#ch-opts .quiz-opt').forEach(b=>b.classList.remove('picked'));
+  el.classList.add('picked');
+  const qid = challengeState.set[challengeState.idx];
+  const q = I18N[lang].bve[qid];
+  if(opt === q.correct) challengeState.solved++; else challengeState.fooled++;
+  document.getElementById('ch-reveal').classList.add('show');
+}
+function chNext(){
+  challengeState.idx++;
+  challengeState.answered = false;
+  if(challengeState.idx >= 10){ go('challenge-score'); }
+  else { render(); }
+}
+function viewChallengeScore(){
+  if(!challengeState){ return viewChallengeIntro(); }
+  const ch = I18N[lang].challenge;
+  const solved = challengeState.solved, fooled = challengeState.fooled;
+  const msgIdx = solved>=8?3:solved>=5?2:solved>=3?1:0;
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <span class="eyebrow">${ch.eyebrow}</span>
+      <h2 class="section-title">${ch.scoreTitle}</h2>
+    </div>
+    <div class="wrap">
+      <div class="score-card">
+        <div class="score-num">${solved}/10</div>
+        <div class="score-line">${ch.messages[msgIdx]}</div>
+        <div class="share-preview">
+          <h4>${ch.shareTitle}</h4>
+          <div class="row"><span>${ch.illusionsLabel}</span><span>10</span></div>
+          <div class="row"><span>${ch.fooledLabel}</span><span>${fooled}</span></div>
+          <div class="row"><span>${ch.solvedLabel}</span><span>${solved}</span></div>
+        </div>
+        <button class="enter-btn" onclick="shareResult(${solved},${fooled})">${ch.share}</button>
+        <div style="margin-top:16px;">
+          <button class="mini-btn" onclick="startChallenge()">${ch.playAgain}</button>
+        </div>
+      </div>
+    </div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+function shareResult(solved, fooled){
+  const ch = I18N[lang].challenge;
+  const text = `${ch.shareTitle}\n10 ${ch.illusionsLabel} · ${fooled} ${ch.fooledLabel} · ${solved} ${ch.solvedLabel}`;
+  if(navigator.share){
+    navigator.share({text}).catch(()=>{});
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>alert(ch.copied));
+  }
+}
+
+/* ============================= SCIENCE HUB ============================= */
+function viewScience(){
+  const s = I18N[lang].science;
+  const groups = {
+    depth: ['r2','r7'],
+    contrast: ['r4','r1'],
+    motion: ['r5'],
+    gestalt: ['r6','r3']
+  };
+  const groupHtml = Object.keys(groups).map(gk=>{
+    const items = groups[gk].map(rid=>{
+      const r = I18N[lang][rid];
+      return `<div class="exhibit" style="margin-bottom:14px;">
+        <div class="exhibit-head"><h3 style="font-size:1.05rem;">${r.title}</h3></div>
+        <p style="font-size:0.85rem;">${r.explainScience}</p>
+      </div>`;
+    }).join('');
+    return `<div class="sci-group"><h4>${s.groups[gk]}</h4>${items}</div>`;
+  }).join('');
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h2 class="section-title">${s.title}</h2>
+      <p class="section-lede">${s.lede}</p>
+    </div>
+    <div class="wrap">${groupHtml}</div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+
+/* ============================= COLLECTION ============================= */
+function collectionTitle(id){
+  if(id==='wdys') return I18N[lang].wdys.title;
+  if(I18N[lang][id]) return I18N[lang][id].title;
+  return id;
+}
+function viewCollection(){
+  const c = I18N[lang].collection;
+  let body;
+  if(collection.length===0){
+    body = `<div class="empty-state">${c.empty}</div>`;
+  } else {
+    body = `<div class="collect-grid">` + collection.map(id=>`
+      <div class="collect-item">
+        <button class="rm" onclick="toggleSave('${id}')" title="${c.remove}">✕</button>
+        <h4>${collectionTitle(id)}</h4>
+        <button class="mini-btn" onclick="go('${id==='wdys'?'wdys':'room-'+id}')" style="margin-top:10px;">→</button>
+      </div>`).join('') + `</div>`;
+  }
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <span class="eyebrow">${c.eyebrow}</span>
+      <h2 class="section-title">${c.title}</h2>
+      <p class="section-lede">${c.lede}</p>
+    </div>
+    <div class="wrap">${body}</div>
+    <footer>${I18N[lang].about.privacy}</footer>
+  </section>`;
+}
+
+/* ============================= ABOUT ============================= */
+function viewAbout(){
+  const a = I18N[lang].about;
+  return `
+  <section class="view active">
+    <div class="room-hero wrap">
+      <span class="eyebrow">${a.eyebrow}</span>
+      <h2 class="section-title">${a.title}</h2>
+    </div>
+    <div class="wrap">
+      <p style="max-width:64ch;font-size:0.95rem;">${a.body}</p>
+    </div>
+    <footer>${a.privacy}</footer>
+  </section>`;
+}
+
+/* ============================= post-render hooks ============================= */
+function afterRender(base){
+  if(base==='room-r1'){ cwUpdate(0); }
+  if(base==='room-r3'){ ebRender(55); }
+  if(base==='room-r6'){ initMirror(); }
+  if(base==='room-r7'){ init3d(); }
+}
+
+/* ============================= INIT ============================= */
+renderChrome();
+render();
+</script>
+</body>
+</html>
